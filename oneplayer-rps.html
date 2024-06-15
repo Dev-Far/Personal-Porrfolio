@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors - Single Player</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+        #game { text-align: center; }
+        .choice { cursor: pointer; padding: 10px 20px; margin: 10px; border: 1px solid #333; border-radius: 5px; display: inline-block; }
+        .result { margin-top: 20px; }
+        #loading { display: none; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>Rock Paper Scissors - Single Player</h1>
+        <br>
+        <br>
+        <div>
+            <span class="choice" onclick="play('rock')">🪨 Rock</span>
+            <span class="choice" onclick="play('paper')">📄 Paper</span>
+            <span class="choice" onclick="play('scissors')">✂️ Scissors</span>
+        </div>
+        <div id="loading">Computer is Playing...</div>
+        <div class="result" id="result"></div>
+        <br><br><br><hr><br>
+        <button onclick="scrollToTop()">Scroll to Top</button>
+        <br><br>
+        <div><a href="home-rps.html">Back to Home</a></div>
+    </div>
+    <script>
+        function play(userChoice) {
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(() => {
+                const choices = ['rock', 'paper', 'scissors'];
+                const computerChoice = choices[Math.floor(Math.random() * 3)];
+                let result = '';
+
+                if (userChoice === computerChoice) {
+                    result = "It's a tie!";
+                } else if (
+                    (userChoice === 'rock' && computerChoice === 'scissors') ||
+                    (userChoice === 'paper' && computerChoice === 'rock') ||
+                    (userChoice === 'scissors' && computerChoice === 'paper')
+                ) {
+                    result = 'You win!';
+                } else {
+                    result = 'You lose!';
+                }
+
+                document.getElementById('result').innerHTML = `
+                    You chose: ${userChoice} <br>
+                    Computer chose: ${computerChoice} <br>
+                    ${result}
+                `;
+                document.getElementById('loading').style.display = 'none';
+            }, 2000);
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        
+       //scoreboard 
+
+
+
+    </script>
+</body>
+</html>
