@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe - Single Player</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #3C3028; /* Dark brown background */
+            color: #00D7E5; /* Light blue text */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        #game { 
+            text-align: center; 
+            background-color: #3C3028; /* Dark brown background */
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
+        }
+        #board { 
+            display: grid; 
+            grid-template-columns: repeat(3, 100px); 
+            gap: 5px; 
+            margin: 20px auto; 
+        }
+        .cell { 
+            width: 100px; 
+            height: 100px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 48px; 
+            background: #E65D00; /* Orange background */
+            color: #000000; /* Black text */
+            cursor: pointer; 
+        }
+        .cell:hover { 
+            background: #ff0000; /* Red background on hover */
+            color: #ffffff; /* White text on hover */
+        }
+        #message { 
+            margin-top: 20px; 
+            color: #ffffff; /* White text */
+        }
+        #scoreboard { 
+            margin-top: 20px; 
+            color: #00D7E5; /* Light blue text */
+        }
+        #restart-btn { 
+            margin-top: 20px; 
+            padding: 10px 20px; 
+            background: #00D7E5; /* Light blue background */
+            color: #000000; /* Black text */
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: background 0.3s, color 0.3s; 
+        }
+        #restart-btn:hover { 
+            background: #000000; /* Black background on hover */
+            color: #ffffff; /* White text on hover */
+        }
+        a { 
+            display: block; 
+            margin-top: 20px; 
+            padding: 10px; 
+            border: 2px solid #00D7E5; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            color: #00D7E5; /* Light blue text */
+            font-size: 24px; 
+            transition: background 0.3s, color 0.3s; 
+        }
+        a:hover { 
+            background: #00D7E5; /* Light blue background on hover */
+            color: #000000; /* Black text on hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>Tic-Tac-Toe - Single Player</h1>
+        <div id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div id="message"></div>
+        <div id="scoreboard">Player: <span id="playerScore">0</span> | Computer: <span id="computerScore">0</span></div>
+        <button id="restart-btn">Restart</button>
+        <a href="ttt-home.html">Back to Home</a>
+    </div>
+    <script>
+        const cells = document.querySelectorAll('.cell');
+        const message = document.getElementById('message');
+        const playerScoreDisplay = document.getElementById('playerScore');
+        const computerScoreDisplay = document.getElementById('computerScore');
+        const restartButton = document.getElementById('restart-btn');
+        let board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let playerScore = 0;
+        let computerScore = 0;
+        let gameActive = true;
+
+        cells.forEach(cell => cell.addEventListener('click', handleClick));
+        restartButton.addEventListener('click', restartGame);
+
+        function handleClick(event) {
+            const index = event.target.dataset.index;
+            if (!board[index] && gameActive) {
+                board[index] = currentPlayer;
+                event.target.innerText = currentPlayer;
+                if (checkWin(currentPlayer)) {
+                    if (currentPlayer === 'X') {
+                        playerScore++;
+                        playerScoreDisplay.textContent = playerScore;
+                        message.textContent = 'You win!';
+                    } else {
+                        computerScore++;
+                        computerScoreDisplay.textContent = computerScore;
+                        message.textContent = 'Computer wins!';
+                    }
+                    endGame();
+                } else if (board.every(cell => cell)) {
+                    message.textContent = 'It\'s a draw!';
+                    endGame();
+                } else {
+                    currentPlayer = 'O';
+                    setTimeout(makeComputerMove, 1000);
+                }
+            }
+        }
+
+        function makeComputerMove() {
+            if (gameActive) {
+                let bestMove = getBestMove();
+                board[bestMove.index] = 'O';
+                cells[bestMove.index].innerText = 'O';
+                if (checkWin('O')) {
+                    computerScore++;
+                    computerScoreDisplay.textContent = computerScore;
+                    message.textContent = 'Computer wins!';
+                    endGame();
+                } else if (board.every(cell => cell)) {
+                    message.textContent = 'It\'s a draw!';
+                    endGame();
+                } else {
+                    currentPlayer = 'X';
+                }
+            }
+        }
+
+        function checkWin(player) {
+            const winPatterns = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            return winPatterns.some(pattern => pattern.every(index => board[index] === player));
+        }
+
+        function endGame() {
+            gameActive = false;
+            cells.forEach(cell => cell.removeEventListener('click', handleClick));
+        }
+
+        function restartGame() {
+            board = Array(9).fill(null);
+            currentPlayer = 'X';
+            gameActive = true;
+            message.textContent = '';
+            cells.forEach(cell => {
+                cell.innerText = '';
+            });
+            if (currentPlayer === 'O') {
+                setTimeout(makeComputerMove, 1000);
+            } else {
+                cells.forEach(cell => cell.addEventListener('click', handleClick));
+            }
+        }
+
+        function getBestMove() {
+            let bestScore = -Infinity;
+            let bestMove;
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === null) {
+                    board[i] = 'O';
+                    let score = minimax(board, 0, false);
+                    board[i] = null;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return { index: bestMove };
+        }
+
+        function minimax(board, depth, isMaximizing) {
+            let result = checkWin('O') ? 1 : checkWin('X') ? -1 : board.every(cell => cell !== null) ? 0 : null;
+            if (result !== null) {
+                return result;
+            }
+    
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < board.length; i++) {
+                    if (board[i] === null) {
+                        board[i] = 'O';
+                        let score = minimax(board, depth + 1, false);
+                        board[i] = null;
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < board.length; i++) {
+                    if (board[i] === null) {
+                        board[i] = 'X';
+                        let score = minimax(board, depth + 1, true);
+                        board[i] = null;
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+                return bestScore;
+            }
+        }
+    </script>
+</body>
+</html>
